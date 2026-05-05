@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Izuke — Find Someone to Go With</title>
+  <meta name="description" content="Izuke matches you with runners who share your pace, schedule, and goals. Discover your perfect running partner today." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --red:    #FF3B5C;
+      --navy:   #0F1B35;
+      --navy2:  #1E3A6E;
+      --white:  #FFFFFF;
+      --surface:#F5F5F7;
+      --text:   #1A1A1A;
+      --text2:  #555555;
+      --text3:  #999999;
+      --radius: 16px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      color: var(--text);
+      background: var(--white);
+      overflow-x: hidden;
+    }
+
+    /* ── Utilities ───────────────────────────────────────────────────────── */
+    .container { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+    .tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 14px; border-radius: 100px;
+      font-size: 12px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
+    }
+    .tag--red   { background: rgba(255,59,92,.1); color: var(--red); }
+    .tag--navy  { background: rgba(15,27,53,.08); color: var(--navy); }
+    .tag--white { background: rgba(255,255,255,.15); color: #fff; }
+
+    /* ── NAV ─────────────────────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(255,255,255,.9);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(0,0,0,.06);
+    }
+    .nav-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 64px;
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none;
+    }
+    .nav-logo-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: var(--red);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 12px rgba(255,59,92,.35);
+    }
+    .nav-logo-icon svg { width: 20px; height: 20px; fill: #fff; }
+    .nav-logo-text {
+      font-size: 20px; font-weight: 900; color: var(--navy);
+      letter-spacing: -0.5px;
+    }
+    .nav-links { display: flex; align-items: center; gap: 32px; }
+    .nav-links a {
+      font-size: 14px; font-weight: 600; color: var(--text2);
+      text-decoration: none; transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--navy); }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 11px 22px; border-radius: 12px;
+      font-size: 14px; font-weight: 700;
+      text-decoration: none; cursor: pointer; border: none;
+      transition: transform .15s, box-shadow .15s, opacity .15s;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn--red {
+      background: var(--red); color: #fff;
+      box-shadow: 0 4px 16px rgba(255,59,92,.35);
+    }
+    .btn--red:hover { box-shadow: 0 6px 24px rgba(255,59,92,.45); }
+    .btn--navy { background: var(--navy); color: #fff; }
+    .btn--outline {
+      background: transparent; color: var(--navy);
+      border: 2px solid rgba(15,27,53,.15);
+    }
+    .nav-cta { display: flex; align-items: center; gap: 12px; }
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+    }
+
+    /* ── HERO ────────────────────────────────────────────────────────────── */
+    .hero {
+      padding: 128px 0 80px;
+      background: linear-gradient(160deg, var(--white) 55%, #fff0f3 100%);
+      overflow: hidden;
+    }
+    .hero-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+    }
+    .hero-eyebrow { margin-bottom: 20px; }
+    .hero-title {
+      font-size: clamp(40px, 5vw, 64px);
+      font-weight: 900;
+      line-height: 1.08;
+      letter-spacing: -1.5px;
+      color: var(--navy);
+      margin-bottom: 20px;
+    }
+    .hero-title span { color: var(--red); }
+    .hero-subtitle {
+      font-size: 18px; font-weight: 500;
+      color: var(--text2); line-height: 1.65;
+      max-width: 460px; margin-bottom: 40px;
+    }
+    .hero-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .store-btn {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 20px; border-radius: 14px;
+      background: var(--navy); color: #fff;
+      text-decoration: none;
+      border: none; cursor: pointer;
+      transition: transform .15s, opacity .15s;
+    }
+    .store-btn:hover { transform: translateY(-2px); opacity: .9; }
+    .store-btn svg { width: 22px; height: 22px; fill: #fff; flex-shrink: 0; }
+    .store-btn-text { display: flex; flex-direction: column; }
+    .store-btn-sub { font-size: 10px; font-weight: 500; opacity: .7; line-height: 1; }
+    .store-btn-name { font-size: 15px; font-weight: 800; line-height: 1.3; }
+    .hero-social-proof {
+      margin-top: 32px; display: flex; align-items: center; gap: 12px;
+    }
+    .avatar-stack { display: flex; }
+    .avatar-stack .av {
+      width: 32px; height: 32px; border-radius: 50%;
+      border: 2px solid #fff;
+      margin-left: -8px;
+      overflow: hidden;
+      background: linear-gradient(135deg, var(--red), var(--navy2));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; color: #fff;
+    }
+    .avatar-stack .av:first-child { margin-left: 0; }
+    .social-proof-text { font-size: 13px; font-weight: 600; color: var(--text2); }
+    .social-proof-text strong { color: var(--navy); }
+
+    /* Phone mockups */
+    .hero-phones {
+      position: relative;
+      display: flex; justify-content: center; align-items: flex-end;
+      height: 560px;
+    }
+    .phone {
+      position: absolute;
+      width: 220px;
+      background: var(--navy);
+      border-radius: 36px;
+      border: 8px solid #1a2d4a;
+      box-shadow: 0 40px 80px rgba(15,27,53,.35), 0 0 0 1px rgba(255,255,255,.08);
+      overflow: hidden;
+      display: flex; flex-direction: column;
+    }
+    .phone--main {
+      width: 240px; height: 490px;
+      bottom: 0; left: 50%; transform: translateX(-50%);
+      z-index: 2;
+    }
+    .phone--back-left {
+      width: 210px; height: 450px;
+      bottom: 20px; left: 2%;
+      transform: rotate(-6deg);
+      z-index: 1; opacity: .85;
+    }
+    .phone--back-right {
+      width: 210px; height: 450px;
+      bottom: 20px; right: 2%;
+      transform: rotate(6deg);
+      z-index: 1; opacity: .85;
+    }
+    .phone-notch {
+      width: 80px; height: 20px;
+      background: #1a2d4a; border-radius: 0 0 12px 12px;
+      margin: 0 auto;
+      flex-shrink: 0;
+    }
+    .phone-screen { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+    /* Screen: Discover */
+    .screen-discover { background: #F5F5F7; }
+    .screen-discover .s-header {
+      background: #fff; padding: 10px 14px 8px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .screen-discover .s-header-title { font-size: 16px; font-weight: 900; color: var(--navy); }
+    .screen-discover .s-header-icon {
+      width: 28px; height: 28px; background: var(--surface); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .runner-card {
+      margin: 10px; border-radius: 20px; overflow: hidden;
+      background: #fff; flex: 1;
+      box-shadow: 0 4px 20px rgba(0,0,0,.1);
+      display: flex; flex-direction: column;
+    }
+    .runner-card-photo {
+      height: 160px;
+      background: linear-gradient(160deg, #FF6B80, var(--red));
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+    }
+    .runner-card-photo .avatar-circle {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: rgba(255,255,255,.25); border: 3px solid rgba(255,255,255,.5);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .runner-card-photo .avatar-circle svg { width: 32px; height: 32px; fill: #fff; }
+    .runner-card-photo .verified-badge {
+      position: absolute; top: 10px; right: 10px;
+      background: rgba(255,255,255,.2); backdrop-filter: blur(4px);
+      border-radius: 20px; padding: 3px 8px;
+      font-size: 8px; font-weight: 800; color: #fff; letter-spacing: 0.3px;
+    }
+    .runner-card-info { padding: 10px 12px; flex: 1; }
+    .runner-card-name { font-size: 14px; font-weight: 900; color: var(--navy); margin-bottom: 2px; }
+    .runner-card-pace { font-size: 10px; font-weight: 600; color: var(--text3); margin-bottom: 8px; }
+    .runner-card-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+    .chip {
+      padding: 2px 7px; border-radius: 20px;
+      font-size: 8px; font-weight: 700;
+      background: rgba(255,59,92,.1); color: var(--red);
+    }
+    .chip.blue { background: rgba(59,130,246,.1); color: #3B82F6; }
+    .chip.green { background: rgba(34,197,94,.1); color: #16A34A; }
+    .swipe-btns {
+      display: flex; justify-content: center; gap: 16px;
+      padding: 8px 12px 12px;
+    }
+    .swipe-btn {
+      width: 44px; height: 44px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+    }
+    .swipe-btn.pass { background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,.12); }
+    .swipe-btn.go { background: var(--red); box-shadow: 0 4px 12px rgba(255,59,92,.4); }
+    .swipe-btn svg { width: 18px; height: 18px; }
+    .swipe-btn.pass svg { fill: var(--text3); }
+    .swipe-btn.go svg { fill: #fff; }
+
+    /* Screen: Chat */
+    .screen-chat { background: #F5F5F7; }
+    .screen-chat .chat-header {
+      background: #fff; padding: 10px 12px 8px;
+      display: flex; align-items: center; gap: 8px;
+      border-bottom: 1px solid rgba(0,0,0,.05);
+    }
+    .chat-av {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--red), var(--navy2));
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; position: relative;
+    }
+    .chat-av svg { width: 15px; height: 15px; fill: #fff; }
+    .chat-av .online-dot {
+      position: absolute; bottom: 1px; right: 1px;
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #22C55E; border: 1.5px solid #fff;
+    }
+    .chat-name { font-size: 13px; font-weight: 800; color: var(--navy); }
+    .chat-online { font-size: 9px; font-weight: 600; color: #22C55E; }
+    .chat-messages { flex: 1; padding: 8px 10px; display: flex; flex-direction: column; gap: 6px; overflow: hidden; }
+    .msg {
+      max-width: 80%; padding: 7px 10px; border-radius: 14px;
+      font-size: 9px; font-weight: 500; line-height: 1.45;
+    }
+    .msg.them { background: #fff; color: var(--text); align-self: flex-start; border-bottom-left-radius: 4px; }
+    .msg.me { background: var(--red); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
+    .run-card-msg {
+      background: #fff; border-radius: 12px; padding: 8px;
+      margin-bottom: 2px; align-self: flex-start;
+      width: 85%;
+      border: 1px solid rgba(255,59,92,.2);
+    }
+    .run-card-msg .rcm-header { font-size: 8px; font-weight: 800; color: var(--red); margin-bottom: 4px; }
+    .run-card-msg .rcm-detail { font-size: 8px; color: var(--text3); margin-bottom: 6px; }
+    .run-card-msg .rcm-btn {
+      background: var(--red); color: #fff;
+      border-radius: 6px; padding: 4px 0;
+      font-size: 8px; font-weight: 700;
+      text-align: center;
+    }
+    .chat-input {
+      background: #fff; padding: 6px 10px;
+      display: flex; align-items: center; gap: 6px;
+      border-top: 1px solid rgba(0,0,0,.05);
+    }
+    .chat-input-field {
+      flex: 1; background: var(--surface); border-radius: 16px;
+      padding: 5px 10px; font-size: 9px; color: var(--text3);
+    }
+    .chat-send {
+      width: 24px; height: 24px; border-radius: 50%;
+      background: var(--red); display: flex; align-items: center; justify-content: center;
+    }
+    .chat-send svg { width: 12px; height: 12px; fill: #fff; }
+
+    /* Screen: Journal */
+    .screen-journal { background: #F5F5F7; }
+    .screen-journal .j-header {
+      background: #fff; padding: 10px 14px 8px;
+    }
+    .j-header-title { font-size: 14px; font-weight: 900; color: var(--navy); margin-bottom: 8px; }
+    .j-stats { display: flex; gap: 6px; }
+    .j-stat {
+      flex: 1; background: var(--surface); border-radius: 8px; padding: 6px 8px;
+    }
+    .j-stat-val { font-size: 13px; font-weight: 900; color: var(--navy); }
+    .j-stat-label { font-size: 7px; font-weight: 600; color: var(--text3); }
+    .j-entries { padding: 8px 10px; display: flex; flex-direction: column; gap: 6px; }
+    .j-entry {
+      background: #fff; border-radius: 10px; padding: 8px 10px;
+      display: flex; gap: 8px; align-items: center;
+    }
+    .j-entry-icon {
+      width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .j-entry-icon svg { width: 14px; height: 14px; fill: #fff; }
+    .j-entry-dist { font-size: 12px; font-weight: 900; color: var(--navy); }
+    .j-entry-meta { font-size: 8px; font-weight: 500; color: var(--text3); }
+
+    @media (max-width: 900px) {
+      .hero-inner { grid-template-columns: 1fr; text-align: center; }
+      .hero-subtitle { max-width: 100%; margin-left: auto; margin-right: auto; }
+      .hero-actions { justify-content: center; }
+      .hero-social-proof { justify-content: center; }
+      .hero-phones { height: 400px; }
+      .phone--main { width: 200px; height: 420px; }
+      .phone--back-left, .phone--back-right { width: 180px; height: 380px; }
+    }
+    @media (max-width: 480px) {
+      .phone--back-left, .phone--back-right { display: none; }
+      .phone--main { position: relative; left: auto; transform: none; width: 220px; height: 450px; }
+      .hero-phones { height: 470px; justify-content: center; }
+    }
+
+    /* ── STATS BAR ───────────────────────────────────────────────────────── */
+    .stats-bar {
+      background: var(--navy);
+      padding: 40px 0;
+    }
+    .stats-inner {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 32px; text-align: center;
+    }
+    .stat-item {}
+    .stat-num {
+      font-size: 40px; font-weight: 900; color: #fff;
+      letter-spacing: -1px; line-height: 1;
+      margin-bottom: 6px;
+    }
+    .stat-num span { color: var(--red); }
+    .stat-label { font-size: 14px; font-weight: 600; color: rgba(255,255,255,.5); }
+    @media (max-width: 640px) {
+      .stats-inner { grid-template-columns: 1fr; gap: 24px; }
+    }
+
+    /* ── FEATURES ────────────────────────────────────────────────────────── */
+    .features { padding: 96px 0; background: var(--white); }
+    .section-header { text-align: center; margin-bottom: 64px; }
+    .section-title {
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 900; color: var(--navy);
+      letter-spacing: -1px; line-height: 1.1;
+      margin-top: 12px; margin-bottom: 14px;
+    }
+    .section-sub {
+      font-size: 17px; font-weight: 500; color: var(--text2);
+      max-width: 520px; margin: 0 auto; line-height: 1.65;
+    }
+    .features-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .feature-card {
+      padding: 32px 28px; border-radius: 20px;
+      background: var(--surface);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 40px rgba(0,0,0,.08);
+    }
+    .feature-icon {
+      width: 52px; height: 52px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 20px;
+    }
+    .feature-icon svg { width: 26px; height: 26px; fill: #fff; }
+    .feature-icon--red   { background: linear-gradient(135deg, #FF6B80, var(--red)); }
+    .feature-icon--navy  { background: linear-gradient(135deg, var(--navy2), var(--navy)); }
+    .feature-icon--green { background: linear-gradient(135deg, #34D399, #059669); }
+    .feature-icon--blue  { background: linear-gradient(135deg, #60A5FA, #2563EB); }
+    .feature-icon--amber { background: linear-gradient(135deg, #FCD34D, #F59E0B); }
+    .feature-icon--purple{ background: linear-gradient(135deg, #A78BFA, #7C3AED); }
+    .feature-title { font-size: 17px; font-weight: 800; color: var(--navy); margin-bottom: 8px; }
+    .feature-desc { font-size: 14px; font-weight: 500; color: var(--text2); line-height: 1.6; }
+    @media (max-width: 900px) {
+      .features-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 560px) {
+      .features-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── HOW IT WORKS ────────────────────────────────────────────────────── */
+    .how { padding: 96px 0; background: var(--surface); }
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; margin-top: 64px; }
+    .step { text-align: center; }
+    .step-num {
+      width: 52px; height: 52px; border-radius: 50%;
+      background: var(--red); color: #fff;
+      font-size: 20px; font-weight: 900;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 20px;
+      box-shadow: 0 8px 20px rgba(255,59,92,.35);
+    }
+    .step-title { font-size: 18px; font-weight: 800; color: var(--navy); margin-bottom: 10px; }
+    .step-desc { font-size: 14px; font-weight: 500; color: var(--text2); line-height: 1.6; }
+    .step-connector {
+      display: none;
+    }
+    @media (max-width: 640px) {
+      .steps { grid-template-columns: 1fr; gap: 32px; }
+    }
+
+    /* ── SAFETY ──────────────────────────────────────────────────────────── */
+    .safety {
+      padding: 96px 0;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%);
+      overflow: hidden;
+      position: relative;
+    }
+    .safety::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .safety-inner {
+      position: relative; z-index: 1;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 64px; align-items: center;
+    }
+    .safety-title {
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 900; color: #fff;
+      letter-spacing: -1px; line-height: 1.1;
+      margin-top: 12px; margin-bottom: 16px;
+    }
+    .safety-desc {
+      font-size: 16px; font-weight: 500;
+      color: rgba(255,255,255,.65); line-height: 1.7;
+      margin-bottom: 32px;
+    }
+    .safety-checks { display: flex; flex-direction: column; gap: 14px; }
+    .safety-check { display: flex; align-items: flex-start; gap: 12px; }
+    .check-icon {
+      width: 24px; height: 24px; border-radius: 50%;
+      background: rgba(255,59,92,.25); border: 1.5px solid rgba(255,59,92,.5);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .check-icon svg { width: 12px; height: 12px; fill: var(--red); }
+    .check-text { font-size: 14px; font-weight: 600; color: rgba(255,255,255,.8); line-height: 1.5; }
+    .safety-visual {
+      display: flex; justify-content: center; align-items: center;
+    }
+    .safety-card {
+      background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12);
+      border-radius: 28px; padding: 36px; backdrop-filter: blur(10px);
+      text-align: center; max-width: 320px;
+    }
+    .safety-shield {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: rgba(255,59,92,.15); border: 2px solid rgba(255,59,92,.3);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 20px;
+    }
+    .safety-shield svg { width: 40px; height: 40px; fill: var(--red); }
+    .safety-card-title { font-size: 20px; font-weight: 900; color: #fff; margin-bottom: 8px; }
+    .safety-card-desc { font-size: 13px; font-weight: 500; color: rgba(255,255,255,.55); line-height: 1.6; margin-bottom: 20px; }
+    .verified-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 16px; border-radius: 100px;
+      background: rgba(34,197,94,.15); border: 1px solid rgba(34,197,94,.3);
+    }
+    .verified-pill-dot { width: 8px; height: 8px; border-radius: 50%; background: #22C55E; }
+    .verified-pill-text { font-size: 13px; font-weight: 700; color: #22C55E; }
+    @media (max-width: 768px) {
+      .safety-inner { grid-template-columns: 1fr; text-align: center; }
+      .safety-check { text-align: left; }
+      .safety-visual { margin-top: 32px; }
+    }
+
+    /* ── CTA ─────────────────────────────────────────────────────────────── */
+    .cta { padding: 96px 0; text-align: center; background: var(--white); }
+    .cta-title {
+      font-size: clamp(32px, 5vw, 56px); font-weight: 900;
+      color: var(--navy); letter-spacing: -1.5px; line-height: 1.08;
+      margin-bottom: 16px;
+    }
+    .cta-title span { color: var(--red); }
+    .cta-sub {
+      font-size: 17px; font-weight: 500; color: var(--text2);
+      max-width: 480px; margin: 0 auto 40px; line-height: 1.65;
+    }
+    .cta-actions { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
+    .cta-note { margin-top: 20px; font-size: 13px; font-weight: 500; color: var(--text3); }
+
+    /* ── FOOTER ──────────────────────────────────────────────────────────── */
+    footer {
+      background: var(--navy);
+      padding: 48px 0 32px;
+    }
+    .footer-inner {
+      display: flex; flex-direction: column; align-items: center; gap: 24px;
+      text-align: center;
+    }
+    .footer-logo { display: flex; align-items: center; gap: 10px; }
+    .footer-logo-icon {
+      width: 32px; height: 32px; border-radius: 9px;
+      background: var(--red);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .footer-logo-icon svg { width: 18px; height: 18px; fill: #fff; }
+    .footer-logo-text { font-size: 18px; font-weight: 900; color: #fff; }
+    .footer-links { display: flex; gap: 28px; flex-wrap: wrap; justify-content: center; }
+    .footer-links a {
+      font-size: 13px; font-weight: 600; color: rgba(255,255,255,.45);
+      text-decoration: none; transition: color .2s;
+    }
+    .footer-links a:hover { color: rgba(255,255,255,.8); }
+    .footer-copy { font-size: 12px; font-weight: 500; color: rgba(255,255,255,.3); }
+
+    /* ── ANIMATIONS ──────────────────────────────────────────────────────── */
+    @keyframes float {
+      0%, 100% { transform: translateX(-50%) translateY(0px); }
+      50%       { transform: translateX(-50%) translateY(-12px); }
+    }
+    @keyframes float-left {
+      0%, 100% { transform: rotate(-6deg) translateY(0px); }
+      50%       { transform: rotate(-6deg) translateY(-8px); }
+    }
+    @keyframes float-right {
+      0%, 100% { transform: rotate(6deg) translateY(0px); }
+      50%       { transform: rotate(6deg) translateY(-8px); }
+    }
+    .phone--main        { animation: float       4s ease-in-out infinite; }
+    .phone--back-left   { animation: float-left  4.5s ease-in-out infinite; }
+    .phone--back-right  { animation: float-right 3.8s ease-in-out infinite; }
+
+    /* Fade-in on scroll */
+    .fade-up {
+      opacity: 0; transform: translateY(28px);
+      transition: opacity .6s ease, transform .6s ease;
+    }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body>
+
+  <!-- ── NAV ──────────────────────────────────────────────────────────────── -->
+  <nav>
+    <div class="container nav-inner">
+      <a class="nav-logo" href="#">
+        <div class="nav-logo-icon">
+          <svg viewBox="0 0 24 24"><path d="M13.49 5.48c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-3.6 13.9l1-4.4 2.1 2v6h2v-7.5l-2.1-2 .6-3c1.3 1.5 3.3 2.5 5.5 2.5v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1l-5.2 2.2v4.7h2v-3.4l1.8-.7-1.6 8.1-4.9-1-.4 2 7 1.4z"/></svg>
+        </div>
+        <span class="nav-logo-text">Izuke</span>
+      </a>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#how">How it works</a>
+        <a href="#safety">Safety</a>
+      </div>
+      <div class="nav-cta">
+        <a href="#cta" class="btn btn--red">Get Early Access</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ── HERO ─────────────────────────────────────────────────────────────── -->
+  <section class="hero">
+    <div class="container hero-inner">
+      <div class="hero-content fade-up">
+        <div class="hero-eyebrow">
+          <span class="tag tag--red">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+            Now in Beta
+          </span>
+        </div>
+        <h1 class="hero-title">
+          Find someone<br />to <span>go with.</span>
+        </h1>
+        <p class="hero-subtitle">
+          Izuke matches you with runners who share your pace, schedule, and goals. No more running alone.
+        </p>
+        <div class="hero-actions">
+          <a href="#cta" class="store-btn">
+            <svg viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+            <div class="store-btn-text">
+              <span class="store-btn-sub">Download on the</span>
+              <span class="store-btn-name">App Store</span>
+            </div>
+          </a>
+          <a href="#cta" class="store-btn">
+            <svg viewBox="0 0 24 24"><path d="M3.18 23.76c.35.19.75.21 1.12.06l12.04-6.95-2.61-2.61-10.55 9.5zm-1.8-20.4C1.14 3.7 1 4.08 1 4.56v14.89c0 .48.14.86.38 1.15l.06.06 8.35-8.35v-.19L1.38 3.3l-.06.06zm17.58 9.05-2.92-1.69-2.93 2.93 2.93 2.93 2.93-1.69c.84-.48.84-1.27-.01-1.48zm-15.58 9.82L14.5 16.1l-2.61-2.61L3.38 22.23z"/></svg>
+            <div class="store-btn-text">
+              <span class="store-btn-sub">Get it on</span>
+              <span class="store-btn-name">Google Play</span>
+            </div>
+          </a>
+        </div>
+        <div class="hero-social-proof">
+          <div class="avatar-stack">
+            <div class="av">A</div>
+            <div class="av" style="background:linear-gradient(135deg,#3B82F6,#1D4ED8)">M</div>
+            <div class="av" style="background:linear-gradient(135deg,#22C55E,#16A34A)">J</div>
+            <div class="av" style="background:linear-gradient(135deg,#F59E0B,#D97706)">S</div>
+            <div class="av" style="background:linear-gradient(135deg,#A78BFA,#7C3AED)">K</div>
+          </div>
+          <p class="social-proof-text"><strong>500+</strong> runners already signed up</p>
+        </div>
+      </div>
+
+      <!-- Phone mockups -->
+      <div class="hero-phones">
+
+        <!-- Left phone: Journal -->
+        <div class="phone phone--back-left">
+          <div class="phone-notch"></div>
+          <div class="phone-screen screen-journal">
+            <div class="j-header">
+              <div class="j-header-title">My Journal</div>
+              <div class="j-stats">
+                <div class="j-stat"><div class="j-stat-val">42</div><div class="j-stat-label">Total Runs</div></div>
+                <div class="j-stat"><div class="j-stat-val">186mi</div><div class="j-stat-label">Distance</div></div>
+                <div class="j-stat"><div class="j-stat-val">12</div><div class="j-stat-label">With others</div></div>
+              </div>
+            </div>
+            <div class="j-entries">
+              <div class="j-entry">
+                <div class="j-entry-icon" style="background:linear-gradient(135deg,#FF6B80,#FF3B5C)">
+                  <svg viewBox="0 0 24 24"><path d="M13.49 5.48c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-3.6 13.9l1-4.4 2.1 2v6h2v-7.5l-2.1-2 .6-3c1.3 1.5 3.3 2.5 5.5 2.5v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1l-5.2 2.2v4.7h2v-3.4l1.8-.7-1.6 8.1-4.9-1-.4 2 7 1.4z"/></svg>
+                </div>
+                <div><div class="j-entry-dist">5.2 mi</div><div class="j-entry-meta">44 min · Hard · with Emma</div></div>
+              </div>
+              <div class="j-entry">
+                <div class="j-entry-icon" style="background:linear-gradient(135deg,#34D399,#059669)">
+                  <svg viewBox="0 0 24 24"><path d="M13.49 5.48c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-3.6 13.9l1-4.4 2.1 2v6h2v-7.5l-2.1-2 .6-3c1.3 1.5 3.3 2.5 5.5 2.5v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1l-5.2 2.2v4.7h2v-3.4l1.8-.7-1.6 8.1-4.9-1-.4 2 7 1.4z"/></svg>
+                </div>
+                <div><div class="j-entry-dist">3.1 mi</div><div class="j-entry-meta">28 min · Easy · Solo</div></div>
+              </div>
+              <div class="j-entry">
+                <div class="j-entry-icon" style="background:linear-gradient(135deg,#60A5FA,#2563EB)">
+                  <svg viewBox="0 0 24 24"><path d="M13.49 5.48c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-3.6 13.9l1-4.4 2.1 2v6h2v-7.5l-2.1-2 .6-3c1.3 1.5 3.3 2.5 5.5 2.5v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1l-5.2 2.2v4.7h2v-3.4l1.8-.7-1.6 8.1-4.9-1-.4 2 7 1.4z"/></svg>
+                </div>
+                <div><div class="j-entry-dist">10.0 mi</div><div class="j-entry-meta">1:28 · Moderate · with Marcus</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main phone: Discover -->
+        <div class="phone phone--main">
+          <div class="phone-notch"></div>
+          <div class="phone-screen screen-discover">
+            <div class="s-header">
+              <span class="s-header-title">Discover</span>
+              <div class="s-header-icon">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="#999"><path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/></svg>
+              </div>
+            </div>
+            <div class="runner-card">
+              <div class="runner-card-photo">
+                <div class="avatar-circle">
+                  <svg viewBox="0 0 24 24"><path d="M13.49 5.48c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-3.6 13.9l1-4.4 2.1 2v6h2v-7.5l-2.1-2 .6-3c1.3 1.5 3.3 2.5 5.5 2.5v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1l-5.2 2.2v4.7h2v-3.4l1.8-.7-1.6 8.1-4.9-1-.4 2 7 1.4z"/></svg>
+                </div>
+                <div class="verified-badge">✓ Verified</div>
+              </div>
+              <div class="runner-card-info">
+                <div class="runner-card-name">Emma, 28</div>
+                <div class="runner-card-pace">9:30 min/mi · Central Park</div>
+                <div class="runner-card-chips">
+                  <span class="chip">Road</span>
+                  <span class="chip blue">Morning</span>
+                  <span class="chip green">10K Training</span>
+                </div>
+              </div>
+              <div class="swipe-btns">
+                <div class="swipe-btn pass">
+                  <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                </div>
+                <div class="swipe-btn go">
+                  <svg viewBox="0 0 24 24"><path d="M13.49 5.48c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-3.6 13.9l1-4.4 2.1 2v6h2v-7.5l-2.1-2 .6-3c1.3 1.5 3.3 2.5 5.5 2.5v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1l-5.2 2.2v4.7h2v-3.4l1.8-.7-1.6 8.1-4.9-1-.4 2 7 1.4z"/></svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right phone: Chat -->
+        <div class="phone phone--back-right">
+          <div class="phone-notch"></div>
+          <div class="phone-screen screen-chat">
+            <div class="chat-header">
+              <div class="chat-av">
+                <svg viewBox="0 0 24 24"><path d="M13.49 5.48c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-3.6 13.9l1-4.4 2.1 2v6h2v-7.5l-2.1-2 .6-3c1.3 1.5 3.3 2.5 5.5 2.5v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1l-5.2 2.2v4.7h2v-3.4l1.8-.7-1.6 8.1-4.9-1-.4 2 7 1.4z"/></svg>
+                <div class="online-dot"></div>
+              </div>
+              <div>
+                <div class="chat-name">Emma</div>
+                <div class="chat-online">Online now</div>
+              </div>
+            </div>
+            <div class="chat-messages">
+              <div class="msg them">Hey! Want to run Saturday morning?</div>
+              <div class="msg me">I'm in! Central Park loop?</div>
+              <div class="run-card-msg">
+                <div class="rcm-header">Run Invite</div>
+                <div class="rcm-detail">Sat, 7:00 AM · Central Park · 5 mi</div>
+                <div class="rcm-btn">Accept</div>
+              </div>
+              <div class="msg me">See you there!</div>
+            </div>
+            <div class="chat-input">
+              <div class="chat-input-field">Message Emma…</div>
+              <div class="chat-send">
+                <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── STATS BAR ──────────────────────────────────────────────────────────── -->
+  <section class="stats-bar">
+    <div class="container">
+      <div class="stats-inner">
+        <div class="stat-item fade-up">
+          <div class="stat-num">500<span>+</span></div>
+          <div class="stat-label">Runners signed up</div>
+        </div>
+        <div class="stat-item fade-up" style="transition-delay:.1s">
+          <div class="stat-num">4.8<span>★</span></div>
+          <div class="stat-label">Average rating</div>
+        </div>
+        <div class="stat-item fade-up" style="transition-delay:.2s">
+          <div class="stat-num">98<span>%</span></div>
+          <div class="stat-label">Verified profiles</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FEATURES ───────────────────────────────────────────────────────────── -->
+  <section class="features" id="features">
+    <div class="container">
+      <div class="section-header fade-up">
+        <span class="tag tag--navy">Everything you need</span>
+        <h2 class="section-title">Built for real runners</h2>
+        <p class="section-sub">Every feature is designed around how runners actually think, train, and connect.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card fade-up">
+          <div class="feature-icon feature-icon--red">
+            <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+          </div>
+          <h3 class="feature-title">Discover Nearby Runners</h3>
+          <p class="feature-desc">Swipe through runners near you filtered by pace, run type, availability, and goals. Find your perfect match in minutes.</p>
+        </div>
+        <div class="feature-card fade-up" style="transition-delay:.1s">
+          <div class="feature-icon feature-icon--navy">
+            <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+          </div>
+          <h3 class="feature-title">Real-time Chat</h3>
+          <p class="feature-desc">Message your matches instantly. See when they're online and plan your next run without leaving the app.</p>
+        </div>
+        <div class="feature-card fade-up" style="transition-delay:.2s">
+          <div class="feature-icon feature-icon--green">
+            <svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+          </div>
+          <h3 class="feature-title">Plan Runs Together</h3>
+          <p class="feature-desc">Send run invites with date, time, location, and distance. Accept with one tap and get reminders before the run.</p>
+        </div>
+        <div class="feature-card fade-up" style="transition-delay:.1s">
+          <div class="feature-icon feature-icon--blue">
+            <svg viewBox="0 0 24 24"><path d="M14 6l-1-2H5v17h2v-7h5l1 2h7V6h-6zm4 8h-4l-1-2H7V6h5l1 2h5v6z"/></svg>
+          </div>
+          <h3 class="feature-title">Running Journal</h3>
+          <p class="feature-desc">Log every run with distance, duration, and how you felt. Track your progress and celebrate milestones over time.</p>
+        </div>
+        <div class="feature-card fade-up" style="transition-delay:.2s">
+          <div class="feature-icon feature-icon--amber">
+            <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm4.24 16L12 15.45 7.77 18l1.12-4.81-3.73-3.23 4.92-.42L12 5l1.92 4.53 4.92.42-3.73 3.23L16.23 18z"/></svg>
+          </div>
+          <h3 class="feature-title">Moments</h3>
+          <p class="feature-desc">After every shared run, create a branded Moment card to celebrate it. Save it to your journal and share on social media.</p>
+        </div>
+        <div class="feature-card fade-up" style="transition-delay:.3s">
+          <div class="feature-icon feature-icon--purple">
+            <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+          </div>
+          <h3 class="feature-title">Smart Matching</h3>
+          <p class="feature-desc">Our algorithm considers your pace range, preferred run types, availability windows, and location to surface your best matches first.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── HOW IT WORKS ───────────────────────────────────────────────────────── -->
+  <section class="how" id="how">
+    <div class="container">
+      <div class="section-header fade-up">
+        <span class="tag tag--red">Simple by design</span>
+        <h2 class="section-title">Up and running in minutes</h2>
+        <p class="section-sub">From download to your first shared run — it takes less time than a warm-up.</p>
+      </div>
+      <div class="steps">
+        <div class="step fade-up">
+          <div class="step-num">1</div>
+          <h3 class="step-title">Create your profile</h3>
+          <p class="step-desc">Tell us your pace, what you run, when you're usually free, and where you're based. Takes under two minutes.</p>
+        </div>
+        <div class="step fade-up" style="transition-delay:.15s">
+          <div class="step-num">2</div>
+          <h3 class="step-title">Discover & connect</h3>
+          <p class="step-desc">Browse verified runners near you. Swipe to connect — when both of you say go, it's a match.</p>
+        </div>
+        <div class="step fade-up" style="transition-delay:.3s">
+          <div class="step-num">3</div>
+          <h3 class="step-title">Go run together</h3>
+          <p class="step-desc">Chat, plan the run, meet up, and log it. Create a shared Moment card to celebrate the run afterwards.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── SAFETY ─────────────────────────────────────────────────────────────── -->
+  <section class="safety" id="safety">
+    <div class="container safety-inner">
+      <div class="fade-up">
+        <span class="tag tag--white">Safety first</span>
+        <h2 class="safety-title">Run with confidence.</h2>
+        <p class="safety-desc">
+          We take safety seriously. Every runner on Izuke goes through our verification process so you always know exactly who you're meeting.
+        </p>
+        <div class="safety-checks">
+          <div class="safety-check">
+            <div class="check-icon">
+              <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            </div>
+            <span class="check-text">Passive liveness check — confirms it's a real person, not a photo</span>
+          </div>
+          <div class="safety-check">
+            <div class="check-icon">
+              <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            </div>
+            <span class="check-text">Verified badge visible on every profile in Discover</span>
+          </div>
+          <div class="safety-check">
+            <div class="check-icon">
+              <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            </div>
+            <span class="check-text">Pause Discovery anytime — disappear from the feed instantly</span>
+          </div>
+          <div class="safety-check">
+            <div class="check-icon">
+              <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            </div>
+            <span class="check-text">Block and report any runner with one tap</span>
+          </div>
+        </div>
+      </div>
+      <div class="safety-visual fade-up" style="transition-delay:.2s">
+        <div class="safety-card">
+          <div class="safety-shield">
+            <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+          </div>
+          <h3 class="safety-card-title">Identity Verified</h3>
+          <p class="safety-card-desc">Our automated liveness check confirms every runner is a real person before they can connect with others.</p>
+          <div class="verified-pill">
+            <div class="verified-pill-dot"></div>
+            <span class="verified-pill-text">Verified runner</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CTA ────────────────────────────────────────────────────────────────── -->
+  <section class="cta" id="cta">
+    <div class="container">
+      <div class="fade-up">
+        <h2 class="cta-title">Ready to find your<br /><span>running partner?</span></h2>
+        <p class="cta-sub">Join hundreds of runners already on the waitlist. We're launching soon on iOS and Android.</p>
+        <div class="cta-actions">
+          <a href="#" class="store-btn">
+            <svg viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+            <div class="store-btn-text">
+              <span class="store-btn-sub">Coming soon on</span>
+              <span class="store-btn-name">App Store</span>
+            </div>
+          </a>
+          <a href="#" class="store-btn">
+            <svg viewBox="0 0 24 24"><path d="M3.18 23.76c.35.19.75.21 1.12.06l12.04-6.95-2.61-2.61-10.55 9.5zm-1.8-20.4C1.14 3.7 1 4.08 1 4.56v14.89c0 .48.14.86.38 1.15l.06.06 8.35-8.35v-.19L1.38 3.3l-.06.06zm17.58 9.05-2.92-1.69-2.93 2.93 2.93 2.93 2.93-1.69c.84-.48.84-1.27-.01-1.48zm-15.58 9.82L14.5 16.1l-2.61-2.61L3.38 22.23z"/></svg>
+            <div class="store-btn-text">
+              <span class="store-btn-sub">Coming soon on</span>
+              <span class="store-btn-name">Google Play</span>
+            </div>
+          </a>
+        </div>
+        <p class="cta-note">No spam. We'll only reach out when the app is live.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ─────────────────────────────────────────────────────────────── -->
+  <footer>
+    <div class="container footer-inner">
+      <div class="footer-logo">
+        <div class="footer-logo-icon">
+          <svg viewBox="0 0 24 24"><path d="M13.49 5.48c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-3.6 13.9l1-4.4 2.1 2v6h2v-7.5l-2.1-2 .6-3c1.3 1.5 3.3 2.5 5.5 2.5v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1l-5.2 2.2v4.7h2v-3.4l1.8-.7-1.6 8.1-4.9-1-.4 2 7 1.4z"/></svg>
+        </div>
+        <span class="footer-logo-text">Izuke</span>
+      </div>
+      <div class="footer-links">
+        <a href="#features">Features</a>
+        <a href="#how">How it works</a>
+        <a href="#safety">Safety</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="mailto:hello@izuke.com">Contact</a>
+      </div>
+      <p class="footer-copy">&copy; 2026 Izuke. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Fade-in on scroll
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
+      { threshold: 0.12 }
+    );
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+    // Trigger hero immediately
+    document.querySelectorAll('.hero .fade-up').forEach(el => el.classList.add('visible'));
+  </script>
+
+</body>
+</html>
